@@ -2,46 +2,26 @@
 #define MAX 21
 using namespace std;
 
-int w, h;
-int dy[4] = {0, -1, 0, 1};
-int dx[4] = {1, 0, -1, 0};
-char board[MAX][MAX];
-bool visited[MAX][MAX];
-// vector<int> answer;
-
-typedef struct {
-  int y;
-  int x;
-  int dist;
-  bool check = false;
-} stain;
-
-typedef struct {
-  int y;
-  int x;
-  int cnt;
-} robot;
-
-vector<stain> stains;
-robot robo;
-
-bool comp(stain a, stain b) { return a.dist < b.dist; }
+int W, H;
+int board[MAX][MAX], dist[MAX][MAX];
+const int dy[4] = {0, -1, 0, 1};
+const int dx[4] = {1, 0, -1, 0};
 
 bool isvalid(int newy, int newx) {
-  return 0 <= newy && newy < h && 0 <= newx && newx < w;
+  return 0 <= newy && newy < H && 0 <= newx && newx < W;
 }
 
 void bfs(int y, int x) {
-  memset(visited, false, sizeof(visited));
-  int dist = 0;
-  queue<pair<pair<int, int>, int>> q;
-  q.push(make_pair(make_pair(y, x), dist));
+  bool visited[MAX][MAX] = {
+      false,
+  };
+  queue<pair<int, int>> q;
   visited[y][x] = true;
+  q.push(make_pair(y, x));
 
   while (!q.empty()) {
-    y = q.front().first.first;
-    x = q.front().first.second;
-    dist = q.front().second;
+    int y = q.front().first;
+    int x = q.front().second;
     q.pop();
 
     for (int i = 0; i < 4; i++) {
@@ -52,59 +32,72 @@ void bfs(int y, int x) {
         continue;
       } else if (visited[newy][newx]) {
         continue;
-      } else if (board[newy][newx] == 'x') {
+      } else if (board[newy][newx] == -1) {
         continue;
       }
 
       visited[newy][newx] = true;
-      q.push(make_pair(make_pair(newy, newx), dist + 1));
-      if (board[newy][newx] == '*') {
-        stains.push_back({newy, newx, dist + 1, true});
-      }
+      q.push(make_pair(newy, newx));
+      dist[newy][newx] = dist[y][x] + 1;
     }
   }
 }
 
 int main() {
-  int starty, startx;
+  char c;
   while (true) {
-    scanf("%d %d", &w, &h);
-    if (w == 0 && h == 0) {
-      break;
+    scanf("%d %d", &W, &H);
+    if (W == 0 && H == 0) {
+      return 0;
+    }
+    vector<pair<int, int>> v(1);
+    memset(board, 0, sizeof(board));
+
+    for (int i = 0; i < H; i++) {
+      for (int j = 0; j < W; j++) {
+        scanf(" %c", &c);
+        if (c == '*') {
+          v.push_back(make_pair(i, j));
+        } else if (c == 'x') {
+          board[i][j] = -1;
+        } else if (c == 'o') {
+          v[0] = make_pair(i, j);
+        }
+      }
+    }
+    int result[MAX][MAX] = {
+        0,
+    };
+    for (int i = 0; i < v.size(); i++) {
+      memset(dist, 0, sizeof(dist));
+      bfs(v[i].first, v[i].second);
+
+      for (int j = 0; j < v.size(); j++) {
+        result[i][j] = dist[v[j].first][v[j].second];
+      }
     }
 
-    for (int i = 0; i < h; i++) {
-      scanf("%s", board[i]);
-      for (int j = 0; j < w; j++) {
-        if (board[i][j] == 'o') {
-          robo.y = i;
-          robo.x = j;
-          robo.cnt = -1;
-        }
-      }
+    vector<int> arr(v.size() - 1);
+    for (int i = 0; i < v.size() - 1; i++) {
+      arr[i] = i + 1;
     }
-    while (true) {
-      stains.clear();
-      bfs(robo.y, robo.x);
-      if (stains.size() == 0) {
-        printf("%d\n", robo.cnt);
-        // answer.push_back(robo.cnt);
+    int answer = 2100000000;
+    bool flag = true;
+    do {
+      int sum = result[0][arr[0]];
+      if (sum == 0) {
+        flag = false;
         break;
-      } else {
-        sort(stains.begin(), stains.end(), comp);
-        board[stains[0].y][stains[0].x] = 'o';
-        board[robo.y][robo.x] = '.';
-        robo.y = stains[0].y;
-        robo.x = stains[0].x;
-        if (robo.cnt == -1) {
-          robo.cnt = stains[0].dist;
-        } else {
-          robo.cnt += stains[0].dist;
-        }
       }
+      for (int i = 0; i < v.size() - 2; i++) {
+        sum += result[arr[i]][arr[i + 1]];
+      }
+      answer = min(answer, sum);
+    } while (next_permutation(arr.begin(), arr.end()));
+    if (!flag) {
+      printf("-1\n");
+    } else {
+      printf("%d\n", answer);
     }
   }
-  //   for (int i = 0; i < answer.size(); i++) {
-  //     printf("%d\n", answer[i]);
-  //   }
 }
