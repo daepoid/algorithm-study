@@ -50,9 +50,9 @@ int main() {
     if (W == 0 && H == 0) {
       return 0;
     }
+
     vector<pair<int, int>> v(1);
     memset(board, 0, sizeof(board));
-
     for (int i = 0; i < H; i++) {
       for (int j = 0; j < W; j++) {
         scanf(" %c", &c);
@@ -65,13 +65,13 @@ int main() {
         }
       }
     }
+
     int result[MAX][MAX] = {
         0,
     };
     for (int i = 0; i < v.size(); i++) {
       memset(dist, 0, sizeof(dist));
       bfs(v[i].first, v[i].second);
-
       for (int j = 0; j < v.size(); j++) {
         result[i][j] = dist[v[j].first][v[j].second];
       }
