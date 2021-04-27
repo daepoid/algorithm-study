@@ -70,6 +70,8 @@ int main() {
   }
 
   do {
+    for (int i = 0; i < 4) {
+        }
     if (board[arr[4]][4][4] == 1) {
       make_temp_board();
       memset(visited, 0, sizeof(visited));
