@@ -9,77 +9,140 @@ struct FISH {
   bool live;
 };
 
-int board[MAX][MAX], answer = 0;
-int dy[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
-int dx[8] = {0, -1, -1, -1, 0, 1, 1, 1};
-FISH shark, fishes[MAX * MAX + 1];
-bool flag = true;
+int answer;
+int board[MAX][MAX];
+FISH fishes[20];
+
+int dy[9] = {0, -1, -1, 0, 1, 1, 1, 0, -1};
+int dx[9] = {0, 0, -1, -1, -1, 0, 1, 1, 1};
 
 bool isvalid(int newy, int newx) {
   return 0 <= newy && newy < MAX && 0 <= newx && newx < MAX;
 }
 
-bool isshark(int newy, int newx) {
-  if (shark.y == newy && shark.x == newx) {
-    return true;
-  } else {
-    return false;
+void copy_state(int A[][MAX], int B[][MAX], FISH C[], FISH D[]) {
+  for (int i = 0; i < MAX; i++) {
+    for (int j = 0; j < MAX; j++) {
+      A[i][j] = B[i][j];
+    }
+  }
+  for (int i = 1; i <= MAX * MAX; i++) {
+    C[i] = D[i];
   }
 }
 
+void swap_fish(int idx_a, int idx_b) {
+  FISH temp = fishes[idx_a];
+  fishes[idx_a].y = fishes[idx_b].y;
+  fishes[idx_a].x = fishes[idx_b].x;
+  fishes[idx_b].y = temp.y;
+  fishes[idx_b].x = temp.x;
+}
+
 void move_fish() {
-  for (int i = 0; i < MAX * MAX; i++) {
+  for (int i = 1; i <= MAX * MAX; i++) {
+    if (fishes[i].live == false) {
+      continue;
+    }
+
     int y = fishes[i].y;
     int x = fishes[i].x;
     int dir = fishes[i].dir;
 
-    for (int j = 0; j < 8; j++) {
-      int newy = y + dy[(dir + j) % 8];
-      int newx = x + dx[(dir + j) % 8];
-      if (!isvalid(newy, newx)) {
-        continue;
+    int newy = y + dy[dir];
+    int newx = x + dx[dir];
+    bool flag = false;
+    if (isvalid(newy, newx)) {
+      if (board[newy][newx] == 0) {
+        flag = true;
+        fishes[i].y = newy;
+        fishes[i].x = newx;
+        board[newy][newx] = i;
+        board[y][x] = 0;
+      } else if (board[newy][newx] != -1) {
+        flag = true;
+        swap_fish(i, board[newy][newx]);
+        swap(board[y][x], board[newy][newx]);
       }
-      if (isshark(newy, newx)) {
-        continue;
-      }
+    }
 
-      swap(board[y][x], board[newy][newx]);
-      fishes[i].y = newy;
-      fishes[i].x = newx;
-      if (board[y][x] != -1) {
-        fishes[board[y][x]].y = y;
-        fishes[board[y][x]].x = x;
+    /* 여기까지 왔는데 flag = false 라는 것은,
+     * 물고기가 현재 진행방향으로는 움직일 수 없다는 것을 의미. */
+    /* 다른 7방향을 탐색해본다. */
+    if (!flag) {
+      int newdir = dir + 1;
+      if (newdir == 9) {
+        newdir = 1;
       }
-      break;
+      int newy = y + dy[newdir];
+      int newx = x + dx[newdir];
+
+      while (newdir != dir) {
+        if (isvalid(newy, newx)) {
+          if (board[newy][newx] == 0) {
+            fishes[i].y = newy;
+            fishes[i].x = newx;
+            board[newy][newx] = i;
+            board[y][x] = 0;
+            fishes[i].dir = newdir;
+            break;
+          } else if (board[newy][newx] != -1) {
+            swap_fish(i, board[newy][newx]);
+            swap(board[y][x], board[newy][newx]);
+            fishes[i].dir = newdir;
+            break;
+          }
+        }
+        newdir++;
+        if (newdir == 9) {
+          newdir = 1;
+        }
+        newy = y + dy[newdir];
+        newx = x + dx[newdir];
+      }
     }
   }
 }
 
-void move_shark() {
-  int y = shark.y + dy[shark.dir];
-  int x = shark.x + dx[shark.dir];
-  int dir = fishes[board[y][x]].dir;
-
-  if (board[y][x] != -1) {
-    answer += board[y][x];
-    fishes[board[y][x]].y = -1;
-    fishes[board[y][x]].x = -1;
-    fishes[board[y][x]].dir = -1;
+void make_state(int y, int x, int newy, int newx, int fish_num, bool flag) {
+  if (flag) {
+    board[y][x] = 0;
+    board[newy][newx] = -1;
+    fishes[fish_num].live = false;
+  } else {
     board[y][x] = -1;
+    board[newy][newx] = fish_num;
+    fishes[fish_num].live = true;
   }
 }
 
 void dfs(int y, int x, int dir, int sum) {
   answer = max(answer, sum);
-  int temp[4][4];
-  FISH temp_fishes[MAX * MAX + 1];
-  copy_state(temp, board, temp_fishes, fishes);
 
+  int copied_board[MAX][MAX];
+  FISH copied_fishes[20];
+  copy_state(copied_board, board, copied_fishes, fishes);
   move_fish();
 
-  for (int i = 1; i <= 3; i++) {
+  for (int i = 1; i < MAX; i++) {
     int newy = y + dy[dir] * i;
+    int newx = x + dx[dir] * i;
+    if (isvalid(newy, newx)) {
+      if (board[newy][newx] == 0) {
+        continue;
+      }
+
+      int fish_num = board[newy][newx];
+      int newdir = fishes[fish_num].dir;
+
+      make_state(y, x, newy, newx, fish_num, true);
+      dfs(newy, newx, newdir, sum + fish_num);
+      make_state(y, x, newy, newx, fish_num, false);
+    } else {
+      break;
+    }
   }
+  copy_state(board, copied_board, fishes, copied_fishes);
 }
 
 int main() {
@@ -92,15 +155,11 @@ int main() {
     }
   }
 
-  int temp = board[0][0];
-  int dir = fishes[temp].dir;
-  fishes[temp].live = false;
-
-  shark.y = 0;
-  shark.x = 0;
-  shark.dir = fishes[temp].dir;
+  int fish_num = board[0][0];
+  int dir = fishes[fish_num].dir;
+  fishes[fish_num].live = false;
   board[0][0] = -1;
-
-  dfs(0, 0, dir, temp);
+  dfs(0, 0, dir, fish_num);
   printf("%d\n", answer);
+  return 0;
 }
