@@ -9,26 +9,15 @@ struct FISH {
   bool live;
 };
 
-int answer;
+int answer = 0;
 int board[MAX][MAX];
-FISH fishes[20];
+FISH fishes[MAX * MAX + 1];
 
 int dy[9] = {0, -1, -1, 0, 1, 1, 1, 0, -1};
 int dx[9] = {0, 0, -1, -1, -1, 0, 1, 1, 1};
 
 bool isvalid(int newy, int newx) {
   return 0 <= newy && newy < MAX && 0 <= newx && newx < MAX;
-}
-
-void copy_state(int A[][MAX], int B[][MAX], FISH C[], FISH D[]) {
-  for (int i = 0; i < MAX; i++) {
-    for (int j = 0; j < MAX; j++) {
-      A[i][j] = B[i][j];
-    }
-  }
-  for (int i = 1; i <= MAX * MAX; i++) {
-    C[i] = D[i];
-  }
 }
 
 void swap_fish(int idx_a, int idx_b) {
@@ -65,10 +54,6 @@ void move_fish() {
         swap(board[y][x], board[newy][newx]);
       }
     }
-
-    /* 여기까지 왔는데 flag = false 라는 것은,
-     * 물고기가 현재 진행방향으로는 움직일 수 없다는 것을 의미. */
-    /* 다른 7방향을 탐색해본다. */
     if (!flag) {
       int newdir = dir + 1;
       if (newdir == 9) {
@@ -120,8 +105,9 @@ void dfs(int y, int x, int dir, int sum) {
   answer = max(answer, sum);
 
   int copied_board[MAX][MAX];
-  FISH copied_fishes[20];
-  copy_state(copied_board, board, copied_fishes, fishes);
+  FISH copied_fishes[MAX * MAX + 1];
+  memcpy(copied_board, board, sizeof(board));
+  memcpy(copied_fishes, fishes, sizeof(fishes));
   move_fish();
 
   for (int i = 1; i < MAX; i++) {
@@ -142,7 +128,8 @@ void dfs(int y, int x, int dir, int sum) {
       break;
     }
   }
-  copy_state(board, copied_board, fishes, copied_fishes);
+  memcpy(board, copied_board, sizeof(copied_board));
+  memcpy(fishes, copied_fishes, sizeof(copied_fishes));
 }
 
 int main() {

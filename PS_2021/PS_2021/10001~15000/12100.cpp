@@ -2,124 +2,194 @@
 #define MAX 22
 using namespace std;
 
-int N, answer = 0;
-int board[MAX][MAX], copied_board[MAX][MAX], selected[10];
+int N, answer;
+int board[MAX][MAX], copied_board[MAX][MAX];
+int selected[10];
+
+void move_left() {
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < N - 1; j++) {
+      bool flag = false;
+      if (copied_board[i][j] == 0) {
+        int k = j + 1;
+        while (k <= N - 1) {
+          if (copied_board[i][k] != 0) {
+            flag = true;
+            break;
+          }
+          k++;
+        }
+        if (flag) {
+          copied_board[i][j] = copied_board[i][k];
+          copied_board[i][k] = 0;
+        }
+      }
+    }
+  }
+}
+
+void left() {
+  move_left();
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < N - 1; j++) {
+      if (copied_board[i][j] == copied_board[i][j + 1]) {
+        copied_board[i][j] = copied_board[i][j] * 2;
+        copied_board[i][j + 1] = 0;
+      }
+    }
+  }
+  move_left();
+}
 
 void move_right() {
   for (int i = 0; i < N; i++) {
     for (int j = N - 1; j > 0; j--) {
-      bool check = false;
+      bool flag = false;
       if (copied_board[i][j] == 0) {
         int k = j - 1;
         while (k >= 0) {
           if (copied_board[i][k] != 0) {
-            check = true;
+            flag = true;
             break;
           }
           k--;
         }
-        if (check) {
+        if (flag) {
           copied_board[i][j] = copied_board[i][k];
           copied_board[i][k] = 0;
         }
       }
     }
   }
+}
 
+void right() {
+  move_right();
   for (int i = 0; i < N; i++) {
     for (int j = N - 1; j > 0; j--) {
       if (copied_board[i][j] == copied_board[i][j - 1]) {
-        copied_board[i][j] *= 2;
+        copied_board[i][j] = copied_board[i][j] * 2;
         copied_board[i][j - 1] = 0;
       }
     }
   }
+  move_right();
+}
 
-  for (int i = 0; i < N; i++) {
-    for (int j = N - 1; j > 0; j--) {
-      bool check = false;
+void move_up() {
+  for (int i = 0; i < N - 1; i++) {
+    for (int j = 0; j < N; j++) {
+      bool flag = false;
       if (copied_board[i][j] == 0) {
-        int k = j - 1;
-        while (k >= 0) {
-          if (copied_board[i][k] != 0) {
-            check = true;
+        int k = i + 1;
+        while (k <= N - 1) {
+          if (copied_board[k][j] != 0) {
+            flag = true;
             break;
           }
-          k--;
+          k++;
         }
-        if (check) {
-          copied_board[i][j] = copied_board[i][k];
-          copied_board[i][k] = 0;
+        if (flag) {
+          copied_board[i][j] = copied_board[k][j];
+          copied_board[k][j] = 0;
         }
       }
     }
   }
 }
 
-void move_left() {
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N - 1; j++){
-      
+void up() {
+  move_up();
+  for (int i = 0; i < N - 1; i++) {
+    for (int j = 0; j < N; j++) {
+      if (copied_board[i][j] == copied_board[i + 1][j]) {
+        copied_board[i][j] = copied_board[i][j] * 2;
+        copied_board[i + 1][j] = 0;
+      }
+    }
+  }
+  move_up();
+}
+
+void move_down() {
+  for (int i = N - 1; i > 0; i--) {
+    for (int j = 0; j < N; j++) {
+      bool flag = false;
+      if (copied_board[i][j] == 0) {
+        int k = i - 1;
+        while (k >= 0) {
+          if (copied_board[k][j] != 0) {
+            flag = true;
+            break;
+          }
+          k--;
+        }
+        if (flag) {
+          copied_board[i][j] = copied_board[k][j];
+          copied_board[k][j] = 0;
+        }
+      }
     }
   }
 }
 
-void move_down() {}
+void down() {
+  move_down();
+  for (int i = N - 1; i > 0; i--) {
+    for (int j = 0; j < N; j++) {
+      if (copied_board[i - 1][j] == copied_board[i][j]) {
+        copied_board[i][j] = copied_board[i][j] * 2;
+        copied_board[i - 1][j] = 0;
+      }
+    }
+  }
+  move_down();
+}
 
-void move_up() {}
-
-void copy_board() {
+void find_large_num() {
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
-      copied_board[i][j] = board[i][j];
+      answer = max(answer, copied_board[i][j]);
     }
   }
 }
 
-int find_max_val() {
-  int max_val = -1;
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
-      max_val = max(max_val, copied_board[i][j]);
-    }
-  }
-  return max_val;
-}
-
-void play_game() {
+void run_game() {
   for (int i = 0; i < 5; i++) {
     if (selected[i] == 0) {
-      move_right();
+      right();
     } else if (selected[i] == 1) {
-      move_left();
+      left();
     } else if (selected[i] == 2) {
-      move_down();
+      up();
     } else if (selected[i] == 3) {
-      move_up();
+      down();
     }
   }
-  answer = max(answer, find_max_val());
+  find_large_num();
 }
 
-void select_direction(int cnt) {
+void select_dir(int cnt) {
   if (cnt == 5) {
-    copy_board();
-    play_game();
+    memcpy(copied_board, board, sizeof(board));
+    run_game();
     return;
   }
   for (int i = 0; i < 4; i++) {
     selected[cnt] = i;
-    select_direction(cnt + 1);
+    select_dir(cnt + 1);
   }
 }
 
 int main() {
-  scanf("%d", &N);
+  scanf("%d\n", &N);
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
       scanf("%d", &board[i][j]);
     }
   }
-  select_direction(0);
+  select_dir(0);
   printf("%d\n", answer);
+
+  return 0;
 }
