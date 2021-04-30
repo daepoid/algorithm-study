@@ -64,7 +64,6 @@ int convert_pos(char ch) {
 
 void change_cube(int pos, char dir) {
   char temp[5];
-  move_front_block(pos, dir);
   if (pos == Up) {
     if (dir == '+') {
       temp[0] = cube[Right][0];
@@ -344,9 +343,8 @@ void play_cube() {
 }
 
 int main() {
-  play_cube();
-  //   scanf("%d", &tc);
-  //   while (tc-- > 0) {
-  //     play_cube();
-  //   }
+  scanf("%d", &tc);
+  while (tc-- > 0) {
+    play_cube();
+  }
 }
