@@ -1,49 +1,76 @@
 #include <bits/stdc++.h>
+#define MAX 220
 using namespace std;
 
-int n, k;
-deque<int> up, down, robot;
+int N, K, start, last, cnt, answer;
+int belt[MAX];
+bool visitied[MAX];
+queue<int> robot;
 
-int count_zero() {
-  int cnt = 0;
-  for (int i = 0; i < up.size(); i++) {
-    if (up[i] == 0) {
-      cnt++;
-    }
-  }
-  for (int i = 0; i < down.size(); i++) {
-    if (down[i] == 0) {
-      cnt++;
-    }
-  }
-  return cnt;
+void move_belt() {
+  start--;
+  last--;
+  if (start < 1)
+    start = 2 * N;
+  if (last < 1)
+    last = 2 * N;
 }
 
-void move_robot() {}
+void move_robot() {
+  for (int i = 0; i < robot.size(); i++) {
+    int curr = robot.front();
+    visitied[curr] = false;
+    robot.pop();
 
-void add_robot() {}
+    if (curr == last) {
+      continue;
+    }
+
+    int next = curr + 1;
+    if (next > 2 * N) {
+      next = 1;
+    }
+    if (belt[next] >= 1 && visitied[next] == false) {
+      belt[next]--;
+      if (belt[next] == 0)
+        cnt++;
+      if (next == last)
+        continue;
+      visitied[next] = true;
+      robot.push(next);
+    } else {
+      visitied[curr] = true;
+      robot.push(curr);
+    }
+  }
+}
+
+void add_robot() {
+  if (visitied[start] == false && belt[start] >= 1) {
+    visitied[start] = true;
+    belt[start]--;
+    robot.push(start);
+
+    if (belt[start] == 0)
+      cnt++;
+  }
+}
 
 int main() {
-  int temp, answer = 0;
-  scanf("%d %d", &n, &k);
-  for (int i = 0; i < n; i++) {
-    scanf("%d", &temp);
-    up.push_back(temp);
+  scanf("%d %d", &N, &K);
+  for (int i = 1; i <= 2 * N; i++) {
+    scanf("%d", &belt[i]);
   }
-  for (int i = 0; i < n; i++) {
-    scanf("%d", &temp);
-    down.push_back(temp);
-  }
-  reverse(down.begin(), down.end());
 
-  while (true) {
-    if (count_zero() >= k) {
-      break;
-    }
-    rotate_belt();
+  start = 1;
+  last = N;
+
+  while (cnt < K) {
+    answer++;
+    move_belt();
     move_robot();
     add_robot();
-    answer++;
   }
   printf("%d\n", answer);
+  return 0;
 }
