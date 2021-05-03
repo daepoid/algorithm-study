@@ -29,6 +29,7 @@
         "utility": "cpp",
         "valarray": "cpp",
         "ratio": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "chrono": "cpp"
     }
 }
