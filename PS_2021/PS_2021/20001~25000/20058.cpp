@@ -52,6 +52,7 @@ void firestorm(int num) {
   for (int i = 0; i < board_len; i++) {
     for (int j = 0; j < board_len; j++) {
       if (board[i][j] == 0) {
+        newboard[i][j] = 0;
         continue;
       }
       int cnt = 0;
@@ -120,7 +121,6 @@ int main() {
   for (int i = 0; i < Q; i++) {
     scanf("%d", &temp);
     firestorm(temp);
-    print_board();
   }
   int sum_ice = 0;
   int max_ice = 0;
