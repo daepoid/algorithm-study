@@ -4,33 +4,33 @@ using namespace std;
 
 int N, M;
 int board[MAX][MAX];
-int dy[8] = {0, -1, -1, -1, 0, 1, 1, 1};
-int dx[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
+int dy[9] = {0, 0, -1, -1, -1, 0, 1, 1, 1};
+int dx[9] = {0, -1, -1, 0, 1, 1, 1, 0, -1};
 bool cloud[MAX][MAX];
 bool deleted_cloud[MAX][MAX];
-bool newcloud[MAX][MAX];
 
 bool isvalid(int newy, int newx) {
-  return 0 <= newy && newy < N && 0 <= newx && newx < N;
+  return 0 < newy && newy <= N && 0 < newx && newx <= N;
 }
 
 void move_cloud(int d, int s) {
+  bool newcloud[MAX][MAX];
   int my = dy[d] * s;
   int mx = dx[d] * s;
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j <= N; j++) {
       int newy = i + my;
       int newx = j + mx;
-      while (newy < 0) {
+      while (newy < 1) {
         newy += N;
       }
-      while (newy >= N) {
+      while (newy > N) {
         newy -= N;
       }
-      while (newx < 0) {
+      while (newx < 1) {
         newx += N;
       }
-      while (newx >= N) {
+      while (newx > N) {
         newx -= N;
       }
       newcloud[newy][newx] = cloud[i][j];
@@ -40,8 +40,8 @@ void move_cloud(int d, int s) {
 }
 
 void start_rain() {
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j <= N; j++) {
       if (cloud[i][j]) {
         board[i][j]++;
       }
@@ -50,18 +50,22 @@ void start_rain() {
 }
 
 void delete_cloud() {
-  memcpy(deleted_cloud, cloud, sizeof(cloud));
-  memset(cloud, false, sizeof(cloud));
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j <= N; j++) {
+      deleted_cloud[i][j] = cloud[i][j];
+      cloud[i][j] = false;
+    }
+  }
 }
 
 void water_copy_bug() {
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j <= N; j++) {
       int cnt = 0;
       if (!deleted_cloud[i][j]) {
         continue;
       }
-      for (int a = 1; a < 8; a += 2) {
+      for (int a = 2; a < 9; a += 2) {
         int newy = i + dy[a];
         int newx = j + dx[a];
 
@@ -79,8 +83,8 @@ void water_copy_bug() {
 }
 
 void build_cloud() {
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j <= N; j++) {
       if (board[i][j] >= 2 && !deleted_cloud[i][j]) {
         cloud[i][j] = true;
         board[i][j] -= 2;
@@ -92,27 +96,26 @@ void build_cloud() {
 int main() {
   int d, s;
   scanf("%d %d", &N, &M);
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j <= N; j++) {
       scanf("%d", &board[i][j]);
     }
   }
-  cloud[N - 1][0] = true;
+  cloud[N][1] = true;
+  cloud[N][2] = true;
   cloud[N - 1][1] = true;
-  cloud[N - 2][0] = true;
-  cloud[N - 2][1] = true;
+  cloud[N - 1][2] = true;
   for (int i = 0; i < M; i++) {
     scanf("%d %d", &d, &s);
-    move_cloud(d - 1, s);
+    move_cloud(d, s);
     start_rain();
     delete_cloud();
     water_copy_bug();
     build_cloud();
-    memset(deleted_cloud, false, sizeof(deleted_cloud));
   }
   int answer = 0;
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
+  for (int i = 1; i <= N; i++) {
+    for (int j = 1; j <= N; j++) {
       answer += board[i][j];
     }
   }
