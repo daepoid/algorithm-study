@@ -45,11 +45,11 @@ void build_LUT() {
 }
 
 void blizard(int dir, int len) {
-  int y = N / 2;
-  int x = N / 2;
-  for (int i = 1; i <= len; i++) {
-    int newy = y + dy[dir] * i;
-    int newx = x + dx[dir] * i;
+  int newy = N / 2;
+  int newx = N / 2;
+  for (int i = 0; i < len; i++) {
+    newy += dy[dir];
+    newx += dx[dir];
     if (!isvalid(newy, newx)) {
       continue;
     }
@@ -60,21 +60,24 @@ void blizard(int dir, int len) {
   }
 }
 
-void fillin(int a, int b) {
-  int y = a;
-  int x = b;
-  while (true) {
-    int dir = dir_board[y][x];
-    int newy = y + ddy[dir];
-    int newx = x + ddx[dir];
-    if (board[newy][newx] == 0) {
+void fillin() {
+  for (int i = emptyv.size() - 1; i >= 0; i--) {
+    int y = emptyv[i].first;
+    int x = emptyv[i].second;
+    while (true) {
+      int dir = dir_board[y][x];
+      int newy = y + ddy[dir];
+      int newx = x + ddx[dir];
+      if (board[newy][newx] == 0) {
+        board[y][x] = board[newy][newx];
+        break;
+      }
       board[y][x] = board[newy][newx];
-      break;
+      y = newy;
+      x = newx;
     }
-    board[y][x] = board[newy][newx];
-    y = newy;
-    x = newx;
   }
+  emptyv.clear();
 }
 
 void bomb() {
@@ -252,17 +255,11 @@ int main() {
   for (int i = 0; i < M; i++) {
     scanf("%d %d", &d, &s);
     blizard(d - 1, s);
-    for (int j = emptyv.size() - 1; j >= 0; j--) {
-      fillin(emptyv[j].first, emptyv[j].second);
-    }
-    emptyv.clear();
+    fillin();
     bomb_flag = true;
     while (bomb_flag) {
       bomb();
-      for (int j = emptyv.size() - 1; j >= 0; j--) {
-        fillin(emptyv[j].first, emptyv[j].second);
-      }
-      emptyv.clear();
+      fillin();
     }
     change_marble();
   }
