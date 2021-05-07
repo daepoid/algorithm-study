@@ -2,12 +2,12 @@
 #define MAX 16
 using namespace std;
 
-int T[MAX], P[MAX], dp[MAX], N;
-int answer = 0;
+int N, answer = 0;
+int T[MAX], P[MAX], dp[MAX];
 
 int main() {
   scanf("%d", &N);
-  for (int i = 1; i < N + 1; i++) {
+  for (int i = 1; i <= N; i++) {
     scanf("%d %d", &T[i], &P[i]);
   }
 
