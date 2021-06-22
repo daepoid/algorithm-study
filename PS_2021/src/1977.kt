@@ -1,9 +1,7 @@
 import java.util.*
 import kotlin.math.*
 
-class Q1977 {
-
-}
+class Q1977 {}
 
 fun main() {
     val input: Scanner = Scanner(System.`in`)
@@ -16,14 +14,14 @@ fun main() {
         M = N.also {N = M}
     }
 
-    var numList: MutableList<Int> = mutableListOf<Int>()
+    val numList: MutableList<Int> = mutableListOf<Int>()
 
     for(i: Int in 0..100){
         numList.add(i * i)
     }
 
     for(i: Int in 0..100){
-        if(M <= numList[i] && numList[i] <= N){
+        if(numList[i] in M..N){
             sum += numList[i]
             min_num = min(min_num, numList[i])
         }
