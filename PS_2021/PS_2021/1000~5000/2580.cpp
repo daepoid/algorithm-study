@@ -1,15 +1,4 @@
-#include <algorithm>
-#include <cctype>
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
-#include <deque>
-#include <iostream>
-#include <map>
-#include <queue>
-#include <set>
-#include <string>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
 
 int board[9][9];
