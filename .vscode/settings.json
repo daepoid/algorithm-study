@@ -30,6 +30,7 @@
         "valarray": "cpp",
         "ratio": "cpp",
         "type_traits": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "typeinfo": "cpp"
     }
 }
