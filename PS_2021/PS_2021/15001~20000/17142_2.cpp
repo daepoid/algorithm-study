@@ -13,24 +13,34 @@ bool isvalid(int newy, int newx) {
 }
 
 void move_cloud(int dir, int len) {
-  for (int i = 0; i < clouds.size(); i++) {
-    before[clouds[i].first][clouds[i].second] = false;
-    clouds[i].first += (dy[dir] * len);
-    while (clouds[i].first < 0) {
-      clouds[i].first += N;
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < N; j++) {
+      before[i][j] = false;
     }
-    while (clouds[i].first >= N) {
-      clouds[i].first -= N;
+  }
+
+  for (int i = 0; i < clouds.size(); i++) {
+    int y = clouds[i].first;
+    int x = clouds[i].second;
+
+    y += (dy[dir] * len);
+    while (y < 0) {
+      y += N;
+    }
+    while (y >= N) {
+      y -= N;
     }
 
-    clouds[i].second += (dx[dir] * len);
-    while (clouds[i].second < 0) {
-      clouds[i].second += N;
+    x += (dx[dir] * len);
+    while (x < 0) {
+      x += N;
     }
-    while (clouds[i].second >= N) {
-      clouds[i].second -= N;
+    while (x >= N) {
+      x -= N;
     }
-    before[clouds[i].first][clouds[i].second] = true;
+    clouds[i].first = y;
+    clouds[i].second = x;
+    before[y][x] = true;
   }
 }
 
@@ -46,13 +56,11 @@ void water_copy_magic() {
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
       if (before[i][j]) {
-        int y = i;
-        int x = j;
         for (int a = 1; a < 8; a += 2) {
-          int newy = y + dy[a];
-          int newx = x + dx[a];
+          int newy = i + dy[a];
+          int newx = j + dx[a];
           if (isvalid(newy, newx) && board[newy][newx] > 0) {
-            board[y][x]++;
+            board[i][j]++;
           }
         }
       }
