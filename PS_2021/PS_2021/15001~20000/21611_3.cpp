@@ -1,12 +1,12 @@
 #include <bits/stdc++.h>
-#define MAX 60
+#define MAX 7
 using namespace std;
 
 int N, M;
 int input_board[MAX][MAX];
-int dy[4] = {0, 1, 0, -1};
-int dx[4] = {-1, 0, 1, 0};
-int sum[3] = {0, 0, 0};
+int dy[] = {0, 1, 0, -1};
+int dx[] = {-1, 0, 1, 0};
+int sum[] = {0, 0, 0, 0};
 vector<pair<int, int>> cmds;
 vector<int> board;
 
@@ -19,18 +19,17 @@ void make_list_board() {
   int x = N / 2;
   int dir = 0;
   board.push_back(0);
-  for (int i = 1; i < N + 2; i++) {
+  for (int i = 1; i < N + 1; i++) {
     for (int j = 0; j < 2; j++) {
       for (int k = 0; k < i; k++) {
+        y += dy[dir];
+        x += dx[dir];
         if (!isvalid(y, x)) {
           return;
         }
-        y += dy[dir];
-        x += dx[dir];
-        if (input_board[y][x] == 0) {
-          return;
+        if (input_board[y][x] != 0) {
+          board.push_back(input_board[y][x]);
         }
-        board.push_back(input_board[y][x]);
       }
       dir = (dir + 1) % 4;
     }
@@ -53,10 +52,10 @@ bool is_boomable() {
   for (int i = 1; i < board.size() - 1; i++) {
     if (board[i] == board[i + 1]) {
       cnt++;
-      if (cnt >= 4) {
+      if (cnt == 4) {
         return true;
       }
-    } else if (board[i] != board[i + 1]) {
+    } else {
       cnt = 1;
     }
   }
@@ -71,45 +70,46 @@ void boom_marbles() {
       cnt++;
     } else if (board[i] != board[i - 1]) {
       if (cnt >= 4) {
-        sum[board[i] - 1] += cnt;
+        sum[board[i]] += cnt;
         v.push_back({i, cnt});
       }
       cnt = 1;
     }
   }
   if (cnt >= 4) {
-    sum[board[1] - 1] += cnt;
+    sum[board[1]] += cnt;
     v.push_back({1, cnt});
   }
   for (int i = 0; i < v.size(); i++) {
     int pos = v[i].first;
-    board.erase(board.begin() + pos, board.begin() + pos + v[i].second);
+    for (int j = 0; j < v[i].second; j++) {
+      board.erase(board.begin() + pos);
+    }
   }
 }
 
 void remake_board() {
-  vector<int> temp;
-  temp.push_back(0);
+  vector<int> temp_board;
+  temp_board.push_back(0);
 
   int cnt = 1;
   for (int i = 1; i < board.size() - 1; i++) {
     if (board[i] == board[i + 1]) {
       cnt++;
     } else {
-      temp.push_back(cnt);
-      temp.push_back(board[i]);
+      temp_board.push_back(cnt);
+      temp_board.push_back(board[i]);
       cnt = 1;
     }
   }
-  temp.push_back(cnt);
-  temp.push_back(board[board.size() - 1]);
+  temp_board.push_back(cnt);
+  temp_board.push_back(board[board.size() - 1]);
 
-  if (temp.size() > N * N - 1) {
-    temp.erase(temp.begin() + N * N - 1, temp.end());
+  if (temp_board.size() >= N * N) {
+    temp_board.erase(temp_board.begin() + N * N, temp_board.end());
   }
 
-  board.clear();
-  board = temp;
+  board = temp_board;
 }
 
 int main() {
@@ -134,6 +134,6 @@ int main() {
     remake_board();
   }
 
-  printf("%d\n", sum[0] + sum[1] * 2 + sum[2] * 3);
+  printf("%d\n", sum[1] + sum[2] * 2 + sum[3] * 3);
   return 0;
 }
