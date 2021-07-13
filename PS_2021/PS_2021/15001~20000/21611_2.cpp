@@ -2,61 +2,63 @@
 #define MAX 50
 using namespace std;
 
-struct COORD {
+struct POS {
   int y;
   int x;
 };
 
-int N, M, Answer, Marble[4];
+int N, M, Answer, boom_sum[4];
 int board[MAX][MAX];
-int N_MAP[MAX][MAX];
-bool Delete[MAX * MAX];
-COORD Shark;
-COORD Coord[MAX * MAX];
+int num_board[MAX][MAX];
+bool isdeleted[MAX * MAX];
+POS shark;
+POS list_board[MAX * MAX];
 vector<pair<int, int>> cmds;
 
 int dy[] = {0, -1, 1, 0, 0};
 int dx[] = {0, 0, 0, -1, 1};
 
-int Change_Dir(int dir) {
-  if (dir == 1)
+int change_dir(int dir) {
+  if (dir == 1) {
     return 3;
-  if (dir == 2)
+  } else if (dir == 2) {
     return 4;
-  if (dir == 3)
+  } else if (dir == 3) {
     return 2;
-  if (dir == 4)
+  } else if (dir == 4) {
     return 1;
+  }
+  return -1;
 }
 
 void build_board() {
   int y = N / 2;
   int x = N / 2;
-  int Move_Cnt = 1;
-  int Num = 0;
+  int s = 1;
+  int num = 0;
   int dir = 3;
 
-  Shark = {y, x};
-  N_MAP[y][x] = Num;
-  Coord[Num++] = {y, x};
+  shark = {y, x};
+  num_board[y][x] = num;
+  list_board[num++] = {y, x};
   while (1) {
     for (int i = 0; i < 2; i++) {
-      for (int j = 0; j < Move_Cnt; j++) {
+      for (int j = 0; j < s; j++) {
         y += dy[dir];
         x += dx[dir];
-        N_MAP[y][x] = Num;
-        Coord[Num++] = {y, x};
+        num_board[y][x] = num;
+        list_board[num++] = {y, x};
       }
-      dir = Change_Dir(dir);
+      dir = change_dir(dir);
     }
-    Move_Cnt++;
+    s++;
 
-    if (Move_Cnt == N) {
-      for (int j = 0; j < Move_Cnt; j++) {
+    if (s == N) {
+      for (int j = 0; j < s; j++) {
         y += dy[dir];
         x += dx[dir];
-        N_MAP[y][x] = Num;
-        Coord[Num++] = {y, x};
+        num_board[y][x] = num;
+        list_board[num++] = {y, x};
       }
       break;
     }
@@ -64,120 +66,126 @@ void build_board() {
 }
 
 void blizard(int Idx) {
-  memset(Delete, false, sizeof(Delete));
+  memset(isdeleted, false, sizeof(isdeleted));
   int dir = cmds[Idx].first;
-  int K = cmds[Idx].second;
+  int s = cmds[Idx].second;
 
-  int y = Shark.y;
-  int x = Shark.x;
-  for (int i = 0; i < K; i++) {
+  int y = shark.y;
+  int x = shark.x;
+  for (int i = 0; i < s; i++) {
     y += dy[dir];
     x += dx[dir];
-    Delete[N_MAP[y][x]] = true;
+    isdeleted[num_board[y][x]] = true;
   }
 }
 
 void move_marbles() {
-  bool Flag = false;
+  bool flag = false;
   int cnt = 0;
   for (int i = 1; i < N * N; i++) {
-    if (Delete[i] == true) {
-      Flag = true;
+    if (isdeleted[i]) {
+      flag = true;
       cnt++;
     } else {
-      if (board[Coord[i].y][Coord[i].x] == 0) {
-        for (int j = 1; j <= cnt; j++)
-          board[Coord[i - j].y][Coord[i - j].x] = 0;
-        Flag = false;
+      if (board[list_board[i].y][list_board[i].x] == 0) {
+        for (int j = 1; j <= cnt; j++) {
+          board[list_board[i - j].y][list_board[i - j].x] = 0;
+        }
+        flag = false;
         break;
       } else
-        board[Coord[i - cnt].y][Coord[i - cnt].x] =
-            board[Coord[i].y][Coord[i].x];
+        board[list_board[i - cnt].y][list_board[i - cnt].x] =
+            board[list_board[i].y][list_board[i].x];
     }
   }
 
-  if (Flag == true) {
+  if (flag) {
     int i = (N * N) - 1;
-    for (int j = 0; j < cnt; j++, i--)
-      board[Coord[i].y][Coord[i].x] = 0;
+    for (int j = 0; j < cnt; j++, i--) {
+      board[list_board[i].y][list_board[i].x] = 0;
+    }
   }
 }
 
-bool Destroy_Sequence_Marble() {
-  memset(Delete, false, sizeof(Delete));
+bool boom_marbles() {
+  memset(isdeleted, false, sizeof(isdeleted));
 
-  bool Flag = false;
-  int Cur_Marble = board[Coord[1].y][Coord[1].x];
-  int Sequence_Cnt = 1;
-  int Start_Num = 1;
-  int Num;
-  for (Num = 2; Num < N * N; Num++) {
-    int Next_Marble = board[Coord[Num].y][Coord[Num].x];
-    if (Next_Marble == 0)
+  bool flag = false;
+  int now_num = board[list_board[1].y][list_board[1].x];
+  int cnt = 1;
+  int start_num = 1;
+  int num;
+  for (num = 2; num < N * N; num++) {
+    int nwxt_num = board[list_board[num].y][list_board[num].x];
+    if (nwxt_num == 0) {
       break;
+    }
 
-    if (Cur_Marble == Next_Marble)
-      Sequence_Cnt++;
-    else {
-      if (Sequence_Cnt >= 4) {
-        Flag = true;
-        for (int i = Start_Num; i < Num; i++)
-          Delete[i] = true;
-        Marble[Cur_Marble] += Sequence_Cnt;
+    if (now_num == nwxt_num) {
+      cnt++;
+    } else {
+      if (cnt >= 4) {
+        flag = true;
+        for (int i = start_num; i < num; i++) {
+          isdeleted[i] = true;
+        }
+        boom_sum[now_num] += cnt;
       }
 
-      Cur_Marble = Next_Marble;
-      Sequence_Cnt = 1;
-      Start_Num = Num;
+      now_num = nwxt_num;
+      cnt = 1;
+      start_num = num;
     }
   }
 
-  if (Sequence_Cnt >= 4) {
-    Flag = true;
-    for (int i = Start_Num; i < Num; i++)
-      Delete[i] = true;
-    Marble[Cur_Marble] += Sequence_Cnt;
+  if (cnt >= 4) {
+    flag = true;
+    for (int i = start_num; i < num; i++) {
+      isdeleted[i] = true;
+    }
+    boom_sum[now_num] += cnt;
   }
-  return Flag;
+  return flag;
 }
 
-void rebuild_board() {
-  int New_MAP[MAX][MAX] = {
+void remake_board() {
+  int new_board[MAX][MAX] = {
       0,
   };
-  int Cur_Marble = board[Coord[1].y][Coord[1].x];
+  int now_num = board[list_board[1].y][list_board[1].x];
   int cnt = 1;
-  int Pos_Num = 1;
-  bool Flag = true;
-  for (int Num = 2; Num < N * N; Num++) {
-    if (Pos_Num >= N * N) {
-      Flag = false;
+  int pos_num = 1;
+  bool flag = true;
+  for (int num = 2; num < N * N; num++) {
+    if (pos_num >= N * N) {
+      flag = false;
       break;
     }
 
-    int Next_Marble = board[Coord[Num].y][Coord[Num].x];
-    if (Next_Marble == 0)
+    int nwxt_num = board[list_board[num].y][list_board[num].x];
+    if (nwxt_num == 0) {
       break;
-    if (Cur_Marble == Next_Marble)
+    }
+    if (now_num == nwxt_num) {
       cnt++;
-    else {
-      New_MAP[Coord[Pos_Num].y][Coord[Pos_Num].x] = cnt;
-      New_MAP[Coord[Pos_Num + 1].y][Coord[Pos_Num + 1].x] = Cur_Marble;
-      Cur_Marble = Next_Marble;
+    } else {
+      new_board[list_board[pos_num].y][list_board[pos_num].x] = cnt;
+      new_board[list_board[pos_num + 1].y][list_board[pos_num + 1].x] = now_num;
+      now_num = nwxt_num;
       cnt = 1;
-      Pos_Num += 2;
+      pos_num += 2;
     }
   }
-  if (Flag == true) {
-    if (Pos_Num != 1) {
-      New_MAP[Coord[Pos_Num].y][Coord[Pos_Num].x] = cnt;
-      New_MAP[Coord[Pos_Num + 1].y][Coord[Pos_Num + 1].x] = Cur_Marble;
+  if (flag == true) {
+    if (pos_num != 1) {
+      new_board[list_board[pos_num].y][list_board[pos_num].x] = cnt;
+      new_board[list_board[pos_num + 1].y][list_board[pos_num + 1].x] = now_num;
     }
   }
 
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
-      board[i][j] = New_MAP[i][j];
+      board[i][j] = new_board[i][j];
     }
   }
 }
@@ -192,7 +200,7 @@ int main(void) {
   for (int i = 0; i < M; i++) {
     int a, b;
     scanf("%d %d", &a, &b);
-    cmds.push_back(make_pair(a, b));
+    cmds.push_back({a, b});
   }
 
   build_board();
@@ -200,15 +208,15 @@ int main(void) {
     blizard(i);
     move_marbles();
 
-    while (1) {
-      if (Destroy_Sequence_Marble() == false)
+    while (true) {
+      if (!boom_marbles()) {
         break;
+      }
       move_marbles();
     }
-    rebuild_board();
+    remake_board();
   }
-  Answer = Marble[1] + (2 * Marble[2]) + (3 * Marble[3]);
-  cout << Answer << endl;
 
+  printf("%d\n", boom_sum[1] + (2 * boom_sum[2]) + (3 * boom_sum[3]));
   return 0;
 }
