@@ -7,16 +7,39 @@ int board[MAX][MAX];
 int dy[4] = {0, 1, 0, -1};
 int dx[4] = {-1, 0, 1, 0};
 int sum[3];
+vector<pair<int, int>> cmds;
+vector<int> list_board;
 
-void blizard(int d, int s) {
-  int ndy[5] = {0, -1, 1, 0, 0};
-  int ndx[5] = {0, 0, 0, -1, 1};
+bool isvalid(int newy, int newx) {
+  return 0 <= newy && newy < N && 0 <= newx && newx < N;
+}
+
+void make_list_board() {
   int y = N / 2;
   int x = N / 2;
-  for (int i = 0; i < s; i++) {
-    y += ndy[d];
-    x += ndx[d];
-    board[y][x] = 0;
+  int dir = 0;
+  for (int i = 1; i < N; i++) {
+    for (int j = 0; j < 2; i++) {
+      for (int k = 0; k < i; k++) {
+        if (board[y][x] != 0) {
+          list_board.push_back(board[y][x]);
+        }
+        y += dy[dir];
+        x += dx[dir];
+      }
+      dir = (dir + 1) % 4;
+    }
+  }
+}
+
+void blizard(int idx) {
+  int d = cmds[idx].first;
+  int s = cmds[idx].second;
+  int weight[5] = {0, 7, 3, 1, 5};
+
+  for (int i = s; i > 0; i--) {
+    int pos = 4 * i * i + (weight[d] - 4) * i;
+    list_board.erase(list_board.begin() + pos);
   }
 }
 
@@ -78,7 +101,7 @@ bool is_boomable() {
 
   int cnt = 1;
   for (int i = 0; i < temp_list.size(); i++) {
-    if (temp_list[i] = temp_list[i + 1]) {
+    if (temp_list[i] = temp_list[i + 1] && temp_list[i] != 0) {
       cnt++;
     } else {
       cnt = 1;
@@ -153,15 +176,19 @@ int main() {
       scanf("%d", &board[i][j]);
     }
   }
-
-  int d, s;
   for (int i = 0; i < M; i++) {
+    int d, s;
     scanf("%d %d", &d, &s);
-    blizard(d, s);
-    move_marbles();
+    cmds.push_back({d, s});
+  }
+
+  make_list_board();
+  for (int i = 0; i < M; i++) {
+    blizard(i);
+    // move_marbles();
     while (is_boomable()) {
       boom_marbles();
-      move_marbles();
+      // move_marbles();
     }
   }
   printf("%d\n", sum[0] + sum[1] * 2 + sum[2] * 3);
