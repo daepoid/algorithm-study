@@ -41,7 +41,7 @@ void build_board() {
   shark = {y, x};
   num_board[y][x] = num;
   list_board[num++] = {y, x};
-  while (1) {
+  while (true) {
     for (int i = 0; i < 2; i++) {
       for (int j = 0; j < s; j++) {
         y += dy[dir];
