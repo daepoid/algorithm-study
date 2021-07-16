@@ -3,7 +3,8 @@
 using namespace std;
 
 int N;
-int board[MAX][MAX], dp[MAX][MAX];
+int board[MAX][MAX];
+long long int dp[MAX][MAX];
 
 int main() {
   scanf("%d", &N);
@@ -19,9 +20,11 @@ int main() {
       if (dp[i][j] == 0 || (i == N - 1 && j == N - 1)) {
         continue;
       }
+
       int val = board[i][j];
       int d = i + val;
       int r = j + val;
+
       if (d < N) {
         dp[d][j] += dp[i][j];
       }
@@ -30,5 +33,5 @@ int main() {
       }
     }
   }
-  printf("%d\n", dp[N - 1][N - 1]);
+  printf("%lld\n", dp[N - 1][N - 1]);
 }
