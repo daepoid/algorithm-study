@@ -1,10 +1,11 @@
 #include <bits/stdc++.h>
-#define MAX 10
+#define MAX 5
+#define MAXSIZE 100100
 #define INF 987654321
 using namespace std;
 
 int N;
-int board[MAX][MAX];
+int board[MAXSIZE][5];
 int dp_max[MAX][MAX];
 int dp_min[MAX][MAX];
 
@@ -18,6 +19,7 @@ int main() {
 
   for (int i = 0; i < MAX; i++) {
     for (int j = 0; j < MAX; j++) {
+      dp_max[i][j] = 0;
       dp_min[i][j] = INF;
     }
   }
@@ -37,10 +39,8 @@ int main() {
       temp = max(temp, dp_max[i % 3][j] + board[i + 1][j]);
       temp = max(temp, dp_max[i % 3][j + 1] + board[i + 1][j]);
       dp_max[(i + 1) % 3][j] = temp;
-    }
 
-    for (int j = 1; j <= 3; j++) {
-      int temp = INF;
+      temp = INF;
       temp = min(temp, dp_min[i % 3][j - 1] + board[i + 1][j]);
       temp = min(temp, dp_min[i % 3][j] + board[i + 1][j]);
       temp = min(temp, dp_min[i % 3][j + 1] + board[i + 1][j]);
