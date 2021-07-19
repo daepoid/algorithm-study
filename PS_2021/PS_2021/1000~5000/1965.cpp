@@ -30,7 +30,7 @@ int main() {
         dp[i] = dp[j] + 1;
       }
     }
-    
+
     if (max < dp[i]) {
       max = dp[i];
     }
