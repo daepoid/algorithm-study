@@ -15,6 +15,8 @@ int main() {
     dp[i][i + 1] = board[i][0] * board[i][1] * board[i + 1][1];
   }
 
+  for 
+
   for (int k = 2; k < N + 1; k++) {
     for (int i = 1; i < N + 1 - k; i++) {
       for (int j = i; j < k + i; j++) {
