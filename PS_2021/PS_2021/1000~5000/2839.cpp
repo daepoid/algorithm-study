@@ -1,9 +1,8 @@
 #include <bits/stdc++.h>
 #define MAX 5001
-#define INF 987654321
 using namespace std;
 
-int N, dp[MAX];
+int N;
 
 int main() {
   int temp1, temp2;
