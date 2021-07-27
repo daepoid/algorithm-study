@@ -1,9 +1,11 @@
 {
     "files.exclude": {
         "**/.classpath": true,
+        "**/.exe": true,
+        "**/.factorypath": true,
         "**/.project": true,
         "**/.settings": true,
-        "**/.factorypath": true
+        "**/**/**/**/.exe": true
     },
     "files.associations": {
         "10026": "cpp",
