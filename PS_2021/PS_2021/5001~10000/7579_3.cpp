@@ -15,20 +15,15 @@ int main() {
     scanf("%d", &cost[i]);
     sum += cost[i];
   }
-  for (int i = 1; i < N + 1; i++) {
-    for (int j = 1; j < sum + 1; j++) {
-      if (j >= cost[i]) {
-        dp[i][j] = max(dp[i][j], dp[i - 1][j - cost[i]] + mem[i]);
-      } else {
-        dp[i][j] = dp[i - 1][j];
-      }
+  for (int i = 0; i < N; i++) {
+    for (int j = sum; j >= cost[i]; j--) {
+      dp[i + 1][j] = max(dp[i][j], dp[i][j - cost[i]] + mem[i]);
     }
   }
-  for (int i = 1; i < sum + 1; i++) {
-    if (dp[N][i] >= M) {
-      printf("%d\n", i - 1);
-      break;
-    }
+
+  int i;
+  for (i = 0; i < sum, dp[N][i] < M; i++) {
   }
+  printf("%d\n", i);
   return 0;
 }
