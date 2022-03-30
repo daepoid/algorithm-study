@@ -80,5 +80,8 @@
         "streambuf": "cpp",
         "thread": "cpp",
         "typeindex": "cpp"
-    }
+    },
+    "editor.fontFamily": "Fira Code Retina",
+    "editor.fontLigatures": true,
+    "C_Cpp.errorSquiggles": "Disabled"
 }
