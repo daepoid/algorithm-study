@@ -1,110 +1,168 @@
-#include <bits/stdc++.h>
+#include "bits/stdc++.h"
 #define MAX 101
 using namespace std;
 
 int N, K;
-int bowl[MAX][MAX];
-int answer = 0;
-vector<int> min_value_pos;
+deque<int>board[MAX];
 
-void print_board() {
-  for (int i = 1; i < N + 1; i++) {
-    for (int j = 1; j < N + 1; j++) {
-      printf("%3d ", bowl[i][j]);
+bool isFinish() {
+    int max_val = -1;
+    int min_val = 2100000000;
+    for(int i = 0; i < N; i++) {
+        max_val = max(max_val, board[0][i]);
+        min_val = min(min_val, board[0][i]);
     }
-    printf("\n");
-  }
-  printf("\n");
+    return max_val - min_val <= K;
 }
 
-void add_fish() {
-  int min_pos = 0;
-  for (int i = 0; i < N; i++) {
-    min_pos = bowl[0][i] < bowl[0][min_pos] ? i : min_pos;
-  }
-  bowl[0][min_pos]++;
-  for (int i = 0; i < N; i++) {
-    if (bowl[0][min_pos] - 1 == bowl[0][i]) {
-      bowl[0][i]++;
+void addFishes() {
+    int min = *min_element(board[0].begin(), board[0].end());
+    for(int i = 0; i < N; i++) {
+        if(board[0][i] == min) {
+            board[0][i]++;
+        }
     }
-  }
 }
 
-bool buildalbe(int width, int height) {
-  if (bowl[0].size() - width < height) {
-    return false;
-  }
-  return true;
+bool isBuildable(int width, int height) {
+    return board[0].size() - width >= height;
 }
 
-void build_bowl(int a) {
+void buildBowls() {
+    deque<int> temp[MAX];
+    int width = 1;
+    int height = 1;
+    while(isBuildable(width, height)) {
+        for(int i = 0; i < width; i++) {
+            for (int j = height - 1; j >= 0; j--) {
+                temp[width - i].push_front(board[j].front());
+                board[j].pop_front();
+            }
+        }
+        for(int i = 1; i < width + 1; i++) {
+            board[i] = temp[i];
+            temp[i].clear();
+        }
 
-  while (buildalbe()) {
-    copy();
-    rotate();
-    paste();
-  }
+        int t_num = height;
+        height = width + 1;
+        width = t_num;
+    }
 }
 
-void build_bowl() {
-  int width = 1;
-  int height = 1;
-  int pivot = 1;
-  bool flag = true;
-
-  while (buildalbe(width, height)) {
-
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        board[][] = board[][];
-      }
+void divideFishes() {
+    deque<int> temp[MAX];
+    int height;
+    for(height = 0; height < N; height++) {
+        if(board[height].size() == 0) {
+            break;
+        }
+        temp[height] = board[height];
     }
 
-    if (flag) {
-      width++;
-      flag = false;
-    } else {
-      height++;
-      flag = true;
+    for(int i = height - 1; i >= 0; i--) {
+        for(int j = 0; j < board[i].size(); j++) {
+            
+            // 오른쪽 비교
+            if(j + 1 < board[i].size()) {
+                int d = abs(board[i][j] - board[i][j + 1]) / 5;
+                if (d > 0) {
+                    if(board[i][j] > board[i][j + 1]) {
+                        temp[i][j] -= d;
+                        temp[i][j + 1] += d;
+                    } else {
+                        temp[i][j] += d;
+                        temp[i][j + 1] -= d;
+                    }
+                }
+            }
+
+            // 아래 비교
+            if(i - 1 >= 0) {
+                int d = abs(board[i][j] - board[i - 1][j]) / 5;
+                if (d > 0) {
+                    if (board[i][j] > board[i - 1][j]) {
+                        temp[i][j] -= d;
+                        temp[i - 1][j] += d;
+                    }
+                    else {
+                        temp[i][j] += d;
+                        temp[i - 1][j] -= d;
+                    }
+                }
+            }
+        }        
     }
-  }
+    
+    for (int i = 0; i < N; i++) {
+        if (temp[i].size() == 0) {
+            break;
+        }
+        board[i] = temp[i];
+    }
 }
 
-void move_fish() {}
-
-void sort_bowl() {}
-
-void rebuild_bowl() {}
-
-bool valid_fish_diff() {
-  int max_val = max_element(bowl[0].begin(), bowl[0].end());
-  int min_val = min_element(bowl[0].begin(), bowl[0].end());
-  return (max_val - min_val) <= K;
+void flatBowls() {
+    deque<int> temp;
+    while(board[0].size() > 0) {
+        for(int i = 0; i < N; i++) {
+            if(board[i].size() < 1) {
+                break;
+            }
+            temp.push_back(board[i].front());
+            board[i].pop_front();
+        }
+    }
+    for(int i = 1; i < N; i++) {
+        if(board[i].size() == 0) {
+            break;
+        }
+        board[i].clear();
+    }
+    board[0] = temp;
 }
+
+void foldBowls() {
+    int size = board[0].size() / 4;
+
+    for(int i = 0; i < size; i++) {
+        board[1].push_front(board[0].front());
+        board[0].pop_front();
+    }
+
+    for (int i = 0; i < size; i++) {
+        board[2].push_back(board[0].front());
+        board[0].pop_front();
+    }
+
+    for (int i = 0; i < size; i++) {
+        board[3].push_front(board[0].front());
+        board[0].pop_front();
+    }
+}
+
 
 int main() {
-  int temp;
-  scanf("%d %d", &N, &K);
-  for (int i = 0; i < N; i++) {
-    scanf("%d", &temp);
-    bowl[0].push_back(temp);
-  }
+    scanf("%d %d", &N, &K);
 
-  while (true) {
-    add_fish(); // 1. 물고기 추가
-
-    build_bowl(); // 2. 어항 정리 1
-    move_fish();  // 3. 물고기 수 조절
-    sort_bowl();  // 4. 어항 일렬 조정
-
-    rebuild_bowl(); // 5. 어항 정리 2
-    move_fish();    // 6. 물고기 수 조절
-    sort_bowl();    // 7. 어항 일렬 조정
-
-    answer++; // 8. 정리 카운트
-    if (valid_fish_diff()) {
-      break;
+    for(int i = 0; i < N; i++) {
+        int temp;
+        scanf("%d", &temp);
+        board[0].push_back(temp);
     }
-  }
-  printf("%d\n", answer);
+
+    int answer = 0;
+    while(!isFinish()) {
+        addFishes();
+        buildBowls();
+        divideFishes();
+        flatBowls();
+        foldBowls();
+        divideFishes();
+        flatBowls();
+
+        answer++;
+    }
+
+    printf("%d\n", answer);
 }

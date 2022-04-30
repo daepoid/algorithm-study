@@ -1,57 +1,60 @@
 #include <bits/stdc++.h>
-#define MAX 1111
-#define INF 987654321
+#define MAX 1011
 using namespace std;
 
-int N, K, W;
-int build_time[MAX], visited[MAX];
+int T, N, K, W;
+int times[MAX][2];
+int cnts[MAX];
 bool board[MAX][MAX];
 
-void game() {
-  queue<int> q;
-  q.push(1);
-  visited[1] = build_time[1];
-
-  while (!q.empty()) {
-    int num = q.front();
-    q.pop();
-    if (num == W) {
-      return;
+void solution() {
+    queue<int> q;
+    for (int i = 1; i <= N; i++) {
+        if (cnts[i] == 0) {
+            q.push(i);
+            times[i][1] = times[i][0];
+        }
     }
+    while (!q.empty()) {
+        int num = q.front();
+        q.pop();
 
-    for (int i = 1; i < N + 1; i++) {
-      if (i == num) {
-        continue;
-      }
-      if (!board[num][i]) {
-        continue;
-      }
-      if (visited[i] < visited[num] + build_time[num]) {
-        continue;
-      }
-      visited[i] = visited[num] + build_time[num];
-      q.push(i);
+        if (num == W) {
+            printf("%d\n", times[W][1]);
+            return;
+        }
+
+        for (int i = 1; i <= N; i++) {
+            if (board[num][i]) {
+                cnts[i]--;
+                if (cnts[i] == 0) {
+                    q.push(i);
+                }
+                times[i][1] = max(times[i][1], times[i][0] + times[num][1]);
+            }
+        }
     }
-  }
 }
 
 int main() {
-  int T;
-  scanf("%d", &T);
-  while (T-- > 0) {
-    memset(board, false, sizeof(board));
-    scanf("%d %d", &N, &K);
-    for (int i = 0; i < N; i++) {
-      scanf("%d", &build_time[i + 1]);
-      visited[i + 1] = INF;
+    scanf("%d", &T);
+    while (T-- > 0) {
+        memset(times, 0, sizeof(times));
+        memset(board, false, sizeof(board));
+        memset(cnts, 0, sizeof(cnts));
+        scanf("%d %d", &N, &K);
+        for (int i = 1; i <= N; i++) {
+            scanf("%d", &times[i][0]);
+        }
+
+        for (int i = 0; i < K; i++) {
+            int a, b;
+            scanf("%d %d", &a, &b);
+            board[a][b] = true;
+            cnts[b]++;
+        }
+
+        scanf("%d", &W);
+        solution();
     }
-    for (int i = 0; i < K; i++) {
-      int a, b;
-      scanf("%d %d", &a, &b);
-      board[a][b] = true;
-    }
-    scanf("%d", &W);
-    game();
-    printf("%lld\n", visited[W]);
-  }
 }
