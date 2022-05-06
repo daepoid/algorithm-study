@@ -4,14 +4,14 @@ using namespace std;
 
 int N, M;
 vector<int> board[MAX];
-int cnt[MAX];
+int count[MAX];
 vector<int> answer;
 
 void solutions() {
     priority_queue<int, vector<int>, greater<int>> pq;
 
     for (int i = 1; i <= N; i++) {
-        if (cnt[i] == 0) {
+        if (count[i] == 0) {
             pq.push(i);
         }
     }
@@ -23,8 +23,8 @@ void solutions() {
 
         for (int i = 0; i < board[num].size(); i++) {
             int next_num = board[num][i];
-            cnt[next_num]--;
-            if (cnt[next_num] == 0) {
+            count[next_num]--;
+            if (count[next_num] == 0) {
                 pq.push(next_num);
             }
         }
@@ -46,7 +46,7 @@ int main() {
         int a, b;
         scanf("%d %d", &a, &b);
         board[a].push_back(b);
-        cnt[b]++;
+        count[b]++;
     }
     solutions();
 }

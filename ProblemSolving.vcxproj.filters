@@ -28,6 +28,9 @@
     <Filter Include="Source Files\20001_25000">
       <UniqueIdentifier>{168b1a75-291e-4092-90d4-73b1bf86b8b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\boj">
+      <UniqueIdentifier>{20286a64-487d-45e4-89c0-841b247223f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -1688,6 +1691,48 @@
     </ClCompile>
     <ClCompile Include="1766.cpp">
       <Filter>Source Files\1000_5000</Filter>
+    </ClCompile>
+    <ClCompile Include="1644_2.cpp">
+      <Filter>Source Files\1000_5000</Filter>
+    </ClCompile>
+    <ClCompile Include="1806_2.cpp">
+      <Filter>Source Files\1000_5000</Filter>
+    </ClCompile>
+    <ClCompile Include="2003_3.cpp">
+      <Filter>Source Files\1000_5000</Filter>
+    </ClCompile>
+    <ClCompile Include="13549.cpp">
+      <Filter>Source Files\10001_15000</Filter>
+    </ClCompile>
+    <ClCompile Include="1753.cpp">
+      <Filter>Source Files\1000_5000</Filter>
+    </ClCompile>
+    <ClCompile Include="1916.cpp">
+      <Filter>Source Files\1000_5000</Filter>
+    </ClCompile>
+    <ClCompile Include="1238.cpp">
+      <Filter>Source Files\1000_5000</Filter>
+    </ClCompile>
+    <ClCompile Include="15486_2.cpp">
+      <Filter>Source Files\15001_20000</Filter>
+    </ClCompile>
+    <ClCompile Include="EditTable.cpp">
+      <Filter>Source Files\boj</Filter>
+    </ClCompile>
+    <ClCompile Include="EscapeMaze.cpp">
+      <Filter>Source Files\boj</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildRoad.cpp">
+      <Filter>Source Files\boj</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildBoard_2.cpp">
+      <Filter>Source Files\boj</Filter>
+    </ClCompile>
+    <ClCompile Include="JewelShopping.cpp">
+      <Filter>Source Files\boj</Filter>
+    </ClCompile>
+    <ClCompile Include="ExploreCave.cpp">
+      <Filter>Source Files\boj</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
