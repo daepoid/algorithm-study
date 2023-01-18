@@ -1,55 +1,41 @@
-#include <algorithm>
-#include <cctype>
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
-#include <deque>
-#include <iostream>
-#include <map>
-#include <queue>
-#include <set>
-#include <string>
-#include <vector>
+//
+// Created by SeHyun on 2023-01-09.
+//
+
+
+#include "bits/stdc++.h"
+
 using namespace std;
 
-set<int> s, null_s;
-set<int> all_s = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
-                  11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
-int n, val;
+int M;
+bool arr[21];
 
 int main() {
-  scanf("%d", &n);
-  for (int i = 0; i < n; i++) {
-    char str[8];
-    scanf("%s", str);
-    if (str[0] == 'a' && str[1] == 'd') {
-      scanf("%d", &val);
-      s.insert(val);
-    } else if (str[0] == 'r') {
-      scanf("%d", &val);
-      if (s.find(val) == s.end()) {
-        continue;
-      }
-      s.erase(val);
-    } else if (str[0] == 'c') {
-      scanf("%d", &val);
-      if (s.find(val) != s.end()) {
-        printf("1\n");
-      } else {
-        printf("0\n");
-      }
-    } else if (str[0] == 't') {
-      scanf("%d", &val);
-      if (s.find(val) != s.end()) {
-        s.erase(val);
-      } else {
-        s.insert(val);
-      }
-    } else if (str[0] == 'a' && str[1] == 'l') {
-      s.clear();
-      s = all_s;
-    } else if (str[0] == 'e') {
-      s.clear();
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    cin >> M;
+    string cmd;
+    int val;
+    for (int i = 0; i < M; i++) {
+        cin >> cmd;
+        if (cmd == "add") {
+            cin >> val;
+            arr[val] = true;
+        } else if (cmd == "remove") {
+            cin >> val;
+            arr[val] = false;
+        } else if (cmd == "check") {
+            cin >> val;
+            cout << (arr[val] ? 1 : 0) << "\n";
+        } else if (cmd == "toggle") {
+            cin >> val;
+            arr[val] = !arr[val];
+        } else if (cmd == "all") {
+            memset(arr, true, sizeof(arr));
+        } else if (cmd == "empty") {
+            memset(arr, false, sizeof(arr));
+        }
     }
-  }
 }
