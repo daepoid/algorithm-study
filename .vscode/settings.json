@@ -81,7 +81,8 @@
         "thread": "cpp",
         "typeindex": "cpp"
     },
-    "editor.fontFamily": "Fira Code Retina",
+    "editor.fontFamily": "Fira Code",
     "editor.fontLigatures": true,
-    "C_Cpp.errorSquiggles": "Disabled"
+    "C_Cpp.errorSquiggles": "Disabled",
+    "editor.fontSize": 16
 }
