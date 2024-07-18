@@ -73,7 +73,7 @@ public class Q154540 {
         return answer.stream().sorted().mapToInt(Integer::intValue).toArray();
     }
 
-    class Pair {
+    private class Pair {
         int y;
         int x;
 
